@@ -1,0 +1,481 @@
+<html>
+   <head>
+      <title>Demo1-1 Box2dJS</title>
+   </head>
+   <body>
+      <canvas id="canvas" width="800" height="600" style="" ></canvas>
+      <!-- 我们采用的舞台尺寸是640X480 -->
+      <script src="js/Box2d.js"></script>
+      <script src="js/Box2d.min.js"></script>
+      <script src="js/jquery.min2.0.3.js"></script>
+      <script src="js/createjs-2015.11.26.min.js"></script>
+      <script src="js/leap-0.6.4.min.js"></script>  
+      <script src="js/leap-plugins-0.1.6.js"></script>
+      <script>
+         function init(){
+            var   b2Vec2 = Box2D.Common.Math.b2Vec2
+               ,  b2AABB = Box2D.Collision.b2AABB
+               ,  b2BodyDef = Box2D.Dynamics.b2BodyDef
+               ,  b2Body = Box2D.Dynamics.b2Body
+               ,  b2FixtureDef = Box2D.Dynamics.b2FixtureDef
+               ,  b2Fixture = Box2D.Dynamics.b2Fixture
+               ,  b2World = Box2D.Dynamics.b2World
+               ,  b2MassData = Box2D.Collision.Shapes.b2MassData
+               ,  b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape
+               ,  b2CircleShape = Box2D.Collision.Shapes.b2CircleShape
+               ,  b2DebugDraw = Box2D.Dynamics.b2DebugDraw
+               ,  b2MouseJointDef =  Box2D.Dynamics.Joints.b2MouseJointDef
+               ,  b2RevoluteJointDef = Box2D.Dynamics.Joints.b2RevoluteJointDef
+               ,  b2MouseJointDef =  Box2D.Dynamics.Joints.b2MouseJointDef
+               ,  b2_pi = Box2D.b2_pi
+               ;
+
+            var worldScale = 30; // 1米 = 30像素
+            // 创建世界
+            var world = new b2World(
+               new b2Vec2(0, 50)    //gravity
+            ,  true                 //allow sleep
+            );            
+            
+            // 创建刚体
+            var bodyDef = new b2BodyDef();
+            // 创建夹具
+            var fixtureDef = new b2FixtureDef();
+            // 创建形状
+            var polygonShape = new b2PolygonShape();              // 多边形
+            var circleShape =new b2CircleShape();                 // 圆形
+            // 创建旋转关节
+            var jointDef = new b2RevoluteJointDef();              
+            var anchor = new b2Vec2();
+
+            
+            // 创建机器人
+            // bodyDef.type = b2Body.b2_staticBody;                 // 设置为动态类型刚体
+            bodyDef.type = b2Body.b2_dynamicBody;                 // 设置为动态类型刚体
+            bodyDef.b2MassData = 1
+            fixtureDef.density = 0.1;                               // 密度(density)
+            fixtureDef.restitution = 0.0;                         // 恢复(restitution)
+            fixtureDef.friction = 0.1;                            // 摩擦(friction)
+            // 躯干
+            bodyDef.position.Set(320/worldScale, 200/worldScale); // 将刚体添加到世界中
+            polygonShape.SetAsBox(60/worldScale, 80/worldScale);
+            fixtureDef.shape = polygonShape;                      // 分配形状属性给夹具
+            theRobotBody = world.CreateBody(bodyDef);              // 将球添加到世界中
+            theRobotBody.CreateFixture(fixtureDef);
+            // 头
+            bodyDef.position.Set(320/worldScale, 80/worldScale); // 将刚体添加到世界中
+            polygonShape.SetAsBox(30/worldScale, 20/worldScale);
+            fixtureDef.shape = polygonShape;                      // 分配形状属性给夹具
+            theRobotHead = world.CreateBody(bodyDef);              // 将球添加到世界中
+            theRobotHead.CreateFixture(fixtureDef);
+            // 左胳膊
+            bodyDef.position.Set(220/worldScale, 135/worldScale); // 将刚体添加到世界中
+            polygonShape.SetAsBox(40/worldScale, 15/worldScale);
+            fixtureDef.shape = polygonShape;                      // 分配形状属性给夹具
+            theRobotLeftUpperArm = world.CreateBody(bodyDef);              // 将球添加到世界中
+            theRobotLeftUpperArm.CreateFixture(fixtureDef);
+            // 左手臂
+            bodyDef.position.Set(140/worldScale, 135/worldScale); // 将刚体添加到世界中
+            polygonShape.SetAsBox(40/worldScale, 15/worldScale);
+            fixtureDef.shape = polygonShape;                      // 分配形状属性给夹具
+            theRobotLeftForearm = world.CreateBody(bodyDef);              // 将球添加到世界中
+            theRobotLeftForearm.CreateFixture(fixtureDef);
+            // 右胳膊
+            bodyDef.position.Set(420/worldScale, 135/worldScale); // 将刚体添加到世界中
+            polygonShape.SetAsBox(40/worldScale, 15/worldScale);
+            fixtureDef.shape = polygonShape;                      // 分配形状属性给夹具
+            theRobotRightUpperArm = world.CreateBody(bodyDef);              // 将球添加到世界中
+            theRobotRightUpperArm.CreateFixture(fixtureDef);
+            // 右手臂
+            bodyDef.position.Set(500/worldScale, 135/worldScale); // 将刚体添加到世界中
+            polygonShape.SetAsBox(40/worldScale, 15/worldScale);
+            fixtureDef.shape = polygonShape;                      // 分配形状属性给夹具
+            theRobotRightForearm = world.CreateBody(bodyDef);              // 将球添加到世界中
+            theRobotRightForearm.CreateFixture(fixtureDef);
+            // 左大腿
+            fixtureDef.density = 0.7;                               // 密度(density)
+            bodyDef.position.Set(275/worldScale, 320/worldScale); // 将刚体添加到世界中
+            polygonShape.SetAsBox(15/worldScale, 40/worldScale);
+            fixtureDef.shape = polygonShape;                      // 分配形状属性给夹具
+            theRobotLeftThigh = world.CreateBody(bodyDef);              // 将球添加到世界中
+            theRobotLeftThigh.CreateFixture(fixtureDef);
+            // 左小腿
+            fixtureDef.density = 1;                               // 密度(density)
+            bodyDef.position.Set(275/worldScale, 400/worldScale); // 将刚体添加到世界中
+            polygonShape.SetAsBox(15/worldScale, 40/worldScale);
+            fixtureDef.shape = polygonShape;                      // 分配形状属性给夹具
+            theRobotLeftShank = world.CreateBody(bodyDef);              // 将球添加到世界中
+            theRobotLeftShank.CreateFixture(fixtureDef);
+            // 右大腿
+            fixtureDef.density = 0.7;                               // 密度(density)
+            bodyDef.position.Set(365/worldScale, 320/worldScale); // 将刚体添加到世界中
+            polygonShape.SetAsBox(15/worldScale, 40/worldScale);
+            fixtureDef.shape = polygonShape;                      // 分配形状属性给夹具
+            theRobotRightThigh = world.CreateBody(bodyDef);              // 将球添加到世界中
+            theRobotRightThigh.CreateFixture(fixtureDef);
+            // 右小腿
+            fixtureDef.density = 1;                               // 密度(density)
+            bodyDef.position.Set(365/worldScale, 400/worldScale); // 将刚体添加到世界中
+            polygonShape.SetAsBox(15/worldScale, 40/worldScale);
+            fixtureDef.shape = polygonShape;                      // 分配形状属性给夹具
+            theRobotRightShank = world.CreateBody(bodyDef);              // 将球添加到世界中
+            theRobotRightShank.CreateFixture(fixtureDef);
+            // 关节连接
+            anchor.Set(320/worldScale, 80/worldScale);                   // 头 躯干
+            jointDef.Initialize( theRobotBody, theRobotHead, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(260/worldScale, 135/worldScale);                  // 左胳膊 躯干
+            jointDef.Initialize( theRobotLeftUpperArm, theRobotBody, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(380/worldScale, 135/worldScale);                  // 右胳膊 躯干
+            jointDef.Initialize( theRobotRightUpperArm, theRobotBody, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(180/worldScale, 135/worldScale);                  // 左胳膊 左手臂
+            jointDef.Initialize( theRobotLeftUpperArm, theRobotLeftForearm, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(460/worldScale, 135/worldScale);                  // 右胳膊 右手臂
+            jointDef.Initialize( theRobotRightUpperArm, theRobotRightForearm, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(275/worldScale, 280/worldScale);                  // 左大腿 躯干 
+            jointDef.Initialize( theRobotLeftThigh, theRobotBody, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(365/worldScale, 280/worldScale);                  // 右大腿 躯干 
+            jointDef.Initialize( theRobotRightThigh, theRobotBody, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(275/worldScale, 360/worldScale);                  // 左大腿 左小腿 
+            jointDef.Initialize( theRobotLeftThigh, theRobotLeftShank, anchor);
+            jointDef.lowerAngle = -0.5 * b2_pi;  //-90 degrees
+            jointDef.upperAngle = 0.25* b2_pi;  // 45 degrees
+            jointDef.enableLimit = true;
+            jointDef.maxMotorTorque = 10.0;
+            jointDef.motorSpeed = 0.0;
+            jointDef.enableMotor = true;
+            world.CreateJoint(jointDef);  
+            anchor.Set(365/worldScale, 360/worldScale);                  // 右大腿 右小腿
+            jointDef.Initialize( theRobotRightThigh, theRobotRightShank, anchor);
+            jointDef.lowerAngle = -0.5 * b2_pi;  //-90 degrees
+            jointDef.upperAngle = 0.25* b2_pi;  // 45 degrees
+            jointDef.enableLimit = true;
+            jointDef.maxMotorTorque = 10.0;
+            jointDef.motorSpeed = 0.0;
+            jointDef.enableMotor = true;
+            world.CreateJoint(jointDef);  
+            // var j = world.CreateJoint(jointDef);  
+            // j.SetMotorSpeed(100);      
+            // j.SetLimits(0, 1);
+            // j.EnableLimit(true);
+            // j.enableMotorSpeed();
+            // 创建实体 地面 
+            bodyDef.position.Set(320/worldScale, 570/worldScale); // 将刚体添加到世界中
+            bodyDef.type = b2Body.b2_staticBody;                  // 设置为静态类型刚体
+            polygonShape.SetAsBox(320/worldScale, 10/worldScale);
+            fixtureDef.shape = polygonShape;                      // 分配形状属性给夹具
+            fixtureDef.density = 1;                               // 密度(density)
+            fixtureDef.restitution = 0.5;                         // 恢复(restitution)
+            fixtureDef.friction = 0.1;                            // 摩擦(friction)
+            var theFloor = world.CreateBody(bodyDef);             // 将地面添加到世界中
+            theFloor.CreateFixture(fixtureDef);
+            
+            // 创建五个圆形 标识五只手指位置
+            bodyDef.type = b2Body.b2_dynamicBody;                 // 设置为动态类型刚体
+            circleShape.SetRadius(20/worldScale)                  // 设置圆形半径
+            fixtureDef.shape=circleShape;                         // 分配形状属性给夹具
+            fixtureDef.density = 1;                               // 密度(density)
+            fixtureDef.restitution = 1.0;                         // 恢复(restitution)
+            fixtureDef.friction = 0.1;                            // 摩擦(friction)
+            var theBall = [1,2,3,4,5];
+            // for(var i=0; i<5; i++) {
+               // 创建实体 球
+            bodyDef.position.Set(100/worldScale, 15/worldScale); // 将刚体添加到世界中
+            theBall[0] = world.CreateBody(bodyDef);              // 将球添加到世界中
+            theBall[0].CreateFixture(fixtureDef);
+            bodyDef.position.Set(275/worldScale, 160/worldScale); // 将刚体添加到世界中
+            theBall[1] = world.CreateBody(bodyDef);              // 将球添加到世界中
+            theBall[1].CreateFixture(fixtureDef);
+            bodyDef.position.Set(320/worldScale, 200/worldScale); // 将刚体添加到世界中
+            theBall[2] = world.CreateBody(bodyDef);              // 将球添加到世界中
+            theBall[2].CreateFixture(fixtureDef);
+            bodyDef.position.Set(365/worldScale, 160/worldScale); // 将刚体添加到世界中
+            theBall[3] = world.CreateBody(bodyDef);              // 将球添加到世界中
+            theBall[3].CreateFixture(fixtureDef);
+            bodyDef.position.Set(540/worldScale, 15/worldScale); // 将刚体添加到世界中
+            theBall[4] = world.CreateBody(bodyDef);              // 将球添加到世界中
+            theBall[4].CreateFixture(fixtureDef);
+            // }
+
+            // 创建牵引线
+            bodyDef.type = b2Body.b2_dynamicBody;                 // 设置为动态类型刚体
+            polygonShape.SetAsBox(2/worldScale, 20/worldScale);   // 设置尺寸
+            fixtureDef.shape = polygonShape;                      // 分配形状属性给夹具
+            // 创建实体 线11
+            bodyDef.position.Set(320/worldScale, 180/worldScale); // 将刚体添加到世界中
+            var theLine11 = world.CreateBody(bodyDef);
+            theLine11.CreateFixture(fixtureDef);
+            // 创建实体 线12
+            bodyDef.position.Set(320/worldScale, 140/worldScale); // 将刚体添加到世界中
+            var theLine12 = world.CreateBody(bodyDef);
+            theLine12.CreateFixture(fixtureDef);
+            // 创建实体 线13
+            bodyDef.position.Set(320/worldScale, 100/worldScale); // 将刚体添加到世界中
+            var theLine13 = world.CreateBody(bodyDef);
+            theLine13.CreateFixture(fixtureDef);
+            
+            // 创建旋转关节
+            anchor.Set(320/worldScale, 200/worldScale);
+            jointDef.Initialize( theBall[2], theLine11, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(320/worldScale, 160/worldScale);
+            jointDef.Initialize( theLine11, theLine12, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(320/worldScale, 120/worldScale);
+            jointDef.Initialize( theLine12, theLine13, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(320/worldScale, 80/worldScale);
+            jointDef.Initialize( theLine13, theRobotHead, anchor);
+            world.CreateJoint(jointDef);  
+
+
+
+            // 创建实体 线21
+            bodyDef.position.Set(100/worldScale, 115/worldScale); // 将刚体添加到世界中
+            var theLine21 = world.CreateBody(bodyDef);
+            theLine21.CreateFixture(fixtureDef);
+            // 创建实体 线22
+            bodyDef.position.Set(100/worldScale, 75/worldScale); // 将刚体添加到世界中
+            var theLine22 = world.CreateBody(bodyDef);
+            theLine22.CreateFixture(fixtureDef);
+            // 创建实体 线23
+            bodyDef.position.Set(100/worldScale, 35/worldScale); // 将刚体添加到世界中
+            var theLine23 = world.CreateBody(bodyDef);
+            theLine23.CreateFixture(fixtureDef);
+            // 创建旋转关节
+            anchor.Set(100/worldScale, 15/worldScale);
+            jointDef.Initialize( theBall[0], theLine23, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(100/worldScale, 55/worldScale);
+            jointDef.Initialize( theLine23, theLine22, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(100/worldScale, 95/worldScale);
+            jointDef.Initialize( theLine22, theLine21, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(100/worldScale, 135/worldScale);
+            jointDef.Initialize( theLine21, theRobotLeftForearm, anchor);
+            world.CreateJoint(jointDef);  
+            
+            
+            // 创建实体 线11
+            bodyDef.position.Set(540/worldScale, 115/worldScale); // 将刚体添加到世界中
+            var theLine31 = world.CreateBody(bodyDef);
+            theLine31.CreateFixture(fixtureDef);
+            // 创建实体 线12
+            bodyDef.position.Set(540/worldScale, 75/worldScale); // 将刚体添加到世界中
+            var theLine32 = world.CreateBody(bodyDef);
+            theLine32.CreateFixture(fixtureDef);
+            // 创建实体 线13
+            bodyDef.position.Set(540/worldScale, 35/worldScale); // 将刚体添加到世界中
+            var theLine33 = world.CreateBody(bodyDef);
+            theLine33.CreateFixture(fixtureDef);
+            // 创建旋转关节
+            anchor.Set(540/worldScale, 15/worldScale);
+            jointDef.Initialize( theBall[4], theLine33, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(540/worldScale, 55/worldScale);
+            jointDef.Initialize( theLine33, theLine32, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(540/worldScale, 95/worldScale);
+            jointDef.Initialize( theLine32, theLine31, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(540/worldScale, 135/worldScale);
+            jointDef.Initialize( theLine31, theRobotRightForearm, anchor);
+            world.CreateJoint(jointDef);  
+
+
+            // 创建实体 线11
+            bodyDef.position.Set(275/worldScale, 420/worldScale); // 将刚体添加到世界中
+            var theLine41 = world.CreateBody(bodyDef);
+            theLine41.CreateFixture(fixtureDef);
+            // 创建实体 线12
+            bodyDef.position.Set(275/worldScale, 380/worldScale); // 将刚体添加到世界中
+            var theLine42 = world.CreateBody(bodyDef);
+            theLine42.CreateFixture(fixtureDef);
+            // 创建实体 线13
+            bodyDef.position.Set(275/worldScale, 340/worldScale); // 将刚体添加到世界中
+            var theLine43 = world.CreateBody(bodyDef);
+            theLine43.CreateFixture(fixtureDef);
+            // 创建实体 线13
+            bodyDef.position.Set(275/worldScale, 300/worldScale); // 将刚体添加到世界中
+            var theLine44 = world.CreateBody(bodyDef);
+            theLine44.CreateFixture(fixtureDef);
+            // 创建实体 线13
+            bodyDef.position.Set(275/worldScale, 260/worldScale); // 将刚体添加到世界中
+            var theLine45 = world.CreateBody(bodyDef);
+            theLine45.CreateFixture(fixtureDef);
+            // 创建实体 线13
+            bodyDef.position.Set(275/worldScale, 220/worldScale); // 将刚体添加到世界中
+            var theLine46 = world.CreateBody(bodyDef);
+            theLine46.CreateFixture(fixtureDef);
+            // 创建实体 线13
+            bodyDef.position.Set(275/worldScale, 180/worldScale); // 将刚体添加到世界中
+            var theLine47 = world.CreateBody(bodyDef);
+            theLine47.CreateFixture(fixtureDef);
+            // 创建旋转关节
+            anchor.Set(275/worldScale, 440/worldScale);
+            jointDef.Initialize( theRobotLeftShank, theLine41, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(275/worldScale, 400/worldScale);
+            jointDef.Initialize( theLine41, theLine42, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(275/worldScale, 360/worldScale);
+            jointDef.Initialize( theLine42, theLine43, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(275/worldScale, 320/worldScale);
+            jointDef.Initialize( theLine43, theLine44, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(275/worldScale, 280/worldScale);
+            jointDef.Initialize( theLine44, theLine45, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(275/worldScale, 240/worldScale);
+            jointDef.Initialize( theLine45, theLine46, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(275/worldScale, 200/worldScale);
+            jointDef.Initialize( theLine46, theLine47, anchor);
+            world.CreateJoint(jointDef);  
+            world.CreateJoint(jointDef);  
+            anchor.Set(275/worldScale, 160/worldScale);
+            jointDef.Initialize( theBall[1], theLine47, anchor);
+            world.CreateJoint(jointDef);  
+
+
+            // 创建实体 线11
+            bodyDef.position.Set(365/worldScale, 420/worldScale); // 将刚体添加到世界中
+            var theLine51 = world.CreateBody(bodyDef);
+            theLine51.CreateFixture(fixtureDef);
+            // 创建实体 线12
+            bodyDef.position.Set(365/worldScale, 380/worldScale); // 将刚体添加到世界中
+            var theLine52 = world.CreateBody(bodyDef);
+            theLine52.CreateFixture(fixtureDef);
+            // 创建实体 线13
+            bodyDef.position.Set(365/worldScale, 340/worldScale); // 将刚体添加到世界中
+            var theLine53 = world.CreateBody(bodyDef);
+            theLine53.CreateFixture(fixtureDef);
+            // 创建实体 线13
+            bodyDef.position.Set(365/worldScale, 300/worldScale); // 将刚体添加到世界中
+            var theLine54 = world.CreateBody(bodyDef);
+            theLine54.CreateFixture(fixtureDef);
+            // 创建实体 线13
+            bodyDef.position.Set(365/worldScale, 260/worldScale); // 将刚体添加到世界中
+            var theLine55 = world.CreateBody(bodyDef);
+            theLine55.CreateFixture(fixtureDef);
+            // 创建实体 线13
+            bodyDef.position.Set(365/worldScale, 220/worldScale); // 将刚体添加到世界中
+            var theLine56 = world.CreateBody(bodyDef);
+            theLine56.CreateFixture(fixtureDef);
+            // 创建实体 线13
+            bodyDef.position.Set(365/worldScale, 180/worldScale); // 将刚体添加到世界中
+            var theLine57 = world.CreateBody(bodyDef);
+            theLine57.CreateFixture(fixtureDef);
+            // 创建旋转关节
+            anchor.Set(365/worldScale, 440/worldScale);
+            jointDef.Initialize( theRobotRightShank, theLine51, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(365/worldScale, 400/worldScale);
+            jointDef.Initialize( theLine51, theLine52, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(365/worldScale, 360/worldScale);
+            jointDef.Initialize( theLine52, theLine53, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(365/worldScale, 320/worldScale);
+            jointDef.Initialize( theLine53, theLine54, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(365/worldScale, 280/worldScale);
+            jointDef.Initialize( theLine54, theLine55, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(365/worldScale, 240/worldScale);
+            jointDef.Initialize( theLine55, theLine56, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(365/worldScale, 200/worldScale);
+            jointDef.Initialize( theLine56, theLine57, anchor);
+            world.CreateJoint(jointDef);  
+            anchor.Set(365/worldScale, 160/worldScale);
+            jointDef.Initialize( theBall[3], theLine57, anchor);
+            world.CreateJoint(jointDef);  
+
+
+
+
+
+
+
+
+
+            // var jointRevolute = world.CreateJoint(jointDef);     //将旋转关节放入世界中
+            // jointRevolute.SetMotorSpeed(100);                    //设置旋转关节马达的速度
+
+
+            // setInterval(updateWorld, 1000 / 60);
+         
+            // 一旦我们告知世界在每次遍历之后显示调试绘图(debug draw),我们需要通 过调试绘图(debug draw)定义视觉设置。
+            var debugDraw = new b2DebugDraw();
+            debugDraw.SetSprite(document.getElementById("canvas").getContext("2d"));
+            debugDraw.SetDrawScale(worldScale);
+            debugDraw.SetFillAlpha(0.5);
+            debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
+            world.SetDebugDraw(debugDraw);
+            
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            var controller = new Leap.Controller();
+            //update
+            controller.on('animationFrame', function(frame) {
+               var i;
+
+               if (frame.hands.length >= 1) {        
+                  var hand = frame.hands[0];
+                  var y = hand.palmPosition[1];
+                  
+                  if(hand.fingers.length >= 2) {
+                     
+                     var sorted = hand.fingers.sort(function(a,b) {
+                        return a.stabilizedTipPosition[0] - b.stabilizedTipPosition[0];
+                     })
+                     
+                     for(i=0,l=5;i<l;i++) {
+                        var finger = sorted[i];
+                        var x = finger.stabilizedTipPosition[0] - 150;
+                        var y = finger.stabilizedTipPosition[1] + 300;
+                        theBall[i].SetPosition(new b2Vec2((x+400)/20, (600-y) / 20));
+                     }
+                  }
+               }
+
+               world.Step(
+                     1 / 60   //frame-rate
+                  ,  10       //velocity iterations
+                  ,  10       //position iterations
+               );
+               world.DrawDebugData();
+               world.ClearForces();
+            });
+            
+            controller.connect();
+            
+         }
+         
+         init();
+      </script>
+   </body>
+</html>
