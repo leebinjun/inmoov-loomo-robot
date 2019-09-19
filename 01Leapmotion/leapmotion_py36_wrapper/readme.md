@@ -1,5 +1,9 @@
 ## Generating a Python 3.6 Wrapper with SWIG 4.0
 
+配置 leapmotion 的 python3.6 开发环境
+
+官方提供的示例只支持Python2.7，如果在其他python版本的环境下运行，需要自行生成动态链接库文件(linux下为so文件，windows下为dll文件，python的动态模块是pyd文件，其实质为dll文件)，并进行替换。
+
 * Generating a Python 3.3.0 Wrapper with SWIG 2.0.9 – Leap Motion Support  
 https://support.leapmotion.com/hc/en-us/articles/223784048
 
