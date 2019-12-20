@@ -12,178 +12,155 @@ import config
 class GUI(Frame):
     
     def __init__(self, master, **kw):
-
-
         Frame.__init__(self, master, **kw)
-        frame = Frame(master, bg="Chocolate")
-        frame.pack()
-        # frame.place(x=(720-692-10)/2, y=(840-803-10)/2)
+        frame = Frame(master, 
+                      height=692+30, 
+                      width=803+20, 
+                      bg="orange")
+        frame.place(x=(720-692-10)/2, y=(840-803-10)/2)
+        
         # 串口设置相关变量
         self.armbot = Armbot()
 
-        # # 创建画布，放置机械臂背景图
-        # self.ca = tk.Canvas(frame, 
-        #                     background='white',
-        #                     width=803,
-        #                     height=692)
-        # self.bm = tk.PhotoImage(file="./images/armbot.gif")
-        # self.ca.place(x=(720-692-10)/2, y=(840-803-10)/2, width=803, height=692)
-        # self.ca.create_image(803/2 + 1, 692/2 + 1, image=self.bm)
-
-        self.bn1 = tk.Button(frame, command = self.motion1)
-        self.bn1.pack()
-        # 创建滑动条，速度
-        self.scs = tk.Scale(frame, 
-                            label='speed',                    # 设置标签内容
-                            from_=500,                        # 设置最大值
-                            to=9999,                          # 设置最小值
-                            orient=tk.HORIZONTAL,             # 设置水平方向
-                            length=200,                       # 设置轨道的长度
-                            width=10,                         # 设置轨道的宽度
-                            showvalue=True,                   # 设置显示当前值
-                            troughcolor='crimson',            # 设置轨道的背景色
-                            variable=self.armbot.speed,       # 设置绑定变量
-                            sliderlength=12,                  # 设置滑块的长度
-                            sliderrelief=tk.FLAT,             # 设置滑块的立体样式
-                            tickinterval=5000,                # 设置指示刻度细分
-                            resolution=50,                    # 设置步长
-                            bg='Lavenderblush',               # 设置背景颜色
-                            command=self.set_speed)           # 设置绑定事件处理，函数或方法
-        # self.scs.place(x=50, y=50)
-        self.scs.pack()
-        self.scs.set(self.armbot.speed)
+        # 创建画布，放置机械臂背景图
+        self.ca = tk.Canvas(frame, 
+                            background='white',
+                            width=803,
+                            height=692)
+        self.bm = tk.PhotoImage(file="hand-control/images/bg_hand.gif")
+        self.ca.place(x=(720-692-10)/2, y=(840-803-10)/2, width=803, height=692)
+        self.ca.create_image(803/2 + 1, 692/2 + 1, image=self.bm)
 
         # 创建滑动条，舵机1
         self.servo1_v = tk.StringVar() #config.INIT_POS[1]
         self.sc1 = tk.Scale(frame, 
-                            label='servo1',                   # 设置标签内容
+                            label='little finger',            # 设置标签内容
                             from_=500,                        # 设置最大值
                             to=2000,                          # 设置最小值
                             orient=tk.HORIZONTAL,             # 设置水平方向
                             length=200,                       # 设置轨道的长度
                             width=10,                         # 设置轨道的宽度
                             showvalue=True,                   # 设置显示当前值
-                            troughcolor='blue',               # 设置轨道的背景色
+                            troughcolor='orange',             # 设置轨道的背景色
                             variable=self.servo1_v,           # 设置绑定变量
                             sliderlength=12,                  # 设置滑块的长度
                             sliderrelief=tk.FLAT,             # 设置滑块的立体样式
                             tickinterval=500,                 # 设置指示刻度细分
                             resolution=1,                     # 设置步长
-                            bg='LightCyan',                   # 设置背景颜色
+                            bg='lemonchiffon',                # 设置背景颜色
                             command=self.servo1_to_pos)       # 设置绑定事件处理，函数或方法
-        # self.sc1.place(x=255, y=300)
-        self.sc1.pack()
+        self.sc1.place(x=30, y=310)
+        # self.sc1.pack()
         self.sc1.set(1200)
 
         # 创建滑动条，舵机2
         self.servo2_v = tk.StringVar()#config.INIT_POS[2]
         self.sc2 = tk.Scale(frame, 
-                            label='servo2',                   # 设置标签内容
-                            from_=500,                       # 设置最大值
+                            label='ring finger',              # 设置标签内容
+                            from_=500,                        # 设置最大值
                             to=2000,                          # 设置最小值
                             orient=tk.HORIZONTAL,             # 设置水平方向
                             length=200,                       # 设置轨道的长度
                             width=10,                         # 设置轨道的宽度
                             showvalue=True,                   # 设置显示当前值
-                            troughcolor='gold',               # 设置轨道的背景色
+                            troughcolor='orange',             # 设置轨道的背景色
                             variable=self.servo2_v,           # 设置绑定变量
                             sliderlength=12,                  # 设置滑块的长度
                             sliderrelief=tk.FLAT,             # 设置滑块的立体样式
-                            tickinterval=500,               # 设置指示刻度细分
+                            tickinterval=500,                 # 设置指示刻度细分
                             resolution=1,                     # 设置步长
-                            bg='lightyellow',                 # 设置背景颜色
+                            bg='lemonchiffon',                # 设置背景颜色
                             command=self.servo2_to_pos)       # 设置绑定事件处理，函数或方法
-        # self.sc2.place(x=115, y=310)
-        self.sc2.pack()
+        self.sc2.place(x=60, y=150)
+        # self.sc2.pack()
         self.sc2.set(1200)
         
         # https://blog.csdn.net/tianmuha/article/details/80958802
         # 创建滑动条，舵机3
         self.servo3_v = tk.StringVar()#config.INIT_POS[3]
         self.sc3 = tk.Scale(frame, 
-                            label='servo3',                   # 设置标签内容
+                            label='middle finger',            # 设置标签内容
                             from_=500,                        # 设置最大值
                             to=2000,                          # 设置最小值
                             orient=tk.HORIZONTAL,             # 设置水平方向
                             length=200,                       # 设置轨道的长度
                             width=10,                         # 设置轨道的宽度
                             showvalue=True,                   # 设置显示当前值
-                            troughcolor='orangeRed',          # 设置轨道的背景色
+                            troughcolor='orange',             # 设置轨道的背景色
                             variable=self.servo3_v,           # 设置绑定变量
                             sliderlength=12,                  # 设置滑块的长度
                             sliderrelief=tk.FLAT,             # 设置滑块的立体样式
                             tickinterval=900/3,               # 设置指示刻度细分
                             resolution=1,                     # 设置步长
-                            bg='LavenderBlush',               # 设置背景颜色
+                            bg='lemonchiffon',                # 设置背景颜色
                             command=self.servo3_to_pos)       # 设置绑定事件处理，函数或方法
-        # self.sc3.place(x=300, y=130)
-        self.sc3.pack()
+        self.sc3.place(x=320, y=20)
+        # self.sc3.pack()
         self.sc3.set(1500)
 
         # 创建滑动条，舵机4
         self.servo4_v = tk.StringVar()#config.INIT_POS[3]
         self.sc4 = tk.Scale(frame, 
-                            label='servo4',                   # 设置标签内容
+                            label='index finger',             # 设置标签内容
                             from_=500,                        # 设置最大值
                             to=2000,                          # 设置最小值
                             orient=tk.HORIZONTAL,             # 设置水平方向
                             length=200,                       # 设置轨道的长度
                             width=10,                         # 设置轨道的宽度
                             showvalue=True,                   # 设置显示当前值
-                            troughcolor='orangeRed',          # 设置轨道的背景色
+                            troughcolor='orange',             # 设置轨道的背景色
                             variable=self.servo4_v,           # 设置绑定变量
                             sliderlength=12,                  # 设置滑块的长度
                             sliderrelief=tk.FLAT,             # 设置滑块的立体样式
                             tickinterval=900/3,               # 设置指示刻度细分
                             resolution=1,                     # 设置步长
-                            bg='LavenderBlush',               # 设置背景颜色
+                            bg='lemonchiffon',                # 设置背景颜色
                             command=self.servo4_to_pos)       # 设置绑定事件处理，函数或方法
-        # self.sc3.place(x=300, y=130)
-        self.sc4.pack()
+        self.sc4.place(x=500, y=200)
+        # self.sc4.pack()
         self.sc4.set(1500)
 
         # 创建滑动条，舵机5
         self.servo5_v = tk.StringVar()#config.INIT_POS[3]
         self.sc5 = tk.Scale(frame, 
-                            label='servo5',                   # 设置标签内容
+                            label='thumb',                    # 设置标签内容
                             from_=500,                        # 设置最大值
                             to=2000,                          # 设置最小值
                             orient=tk.HORIZONTAL,             # 设置水平方向
                             length=200,                       # 设置轨道的长度
                             width=10,                         # 设置轨道的宽度
                             showvalue=True,                   # 设置显示当前值
-                            troughcolor='orangeRed',          # 设置轨道的背景色
+                            troughcolor='orange',             # 设置轨道的背景色
                             variable=self.servo5_v,           # 设置绑定变量
                             sliderlength=12,                  # 设置滑块的长度
                             sliderrelief=tk.FLAT,             # 设置滑块的立体样式
                             tickinterval=900/3,               # 设置指示刻度细分
                             resolution=1,                     # 设置步长
-                            bg='LavenderBlush',               # 设置背景颜色
+                            bg='lemonchiffon',                # 设置背景颜色
                             command=self.servo5_to_pos)       # 设置绑定事件处理，函数或方法
-        # self.sc3.place(x=300, y=130)
-        self.sc5.pack()
+        self.sc5.place(x=550, y=400)
+        # self.sc5.pack()
         self.sc5.set(1500)
 
         # 创建滑动条，舵机6
-        self.servo6_v = tk.StringVar()#config.INIT_POS[3]
+        self.servo6_v = tk.StringVar()
         self.sc6 = tk.Scale(frame, 
-                            label='servo6',                   # 设置标签内容
+                            label='wrist',                    # 设置标签内容
                             from_=500,                        # 设置最大值
                             to=2000,                          # 设置最小值
                             orient=tk.HORIZONTAL,             # 设置水平方向
                             length=200,                       # 设置轨道的长度
                             width=10,                         # 设置轨道的宽度
                             showvalue=True,                   # 设置显示当前值
-                            troughcolor='orangeRed',          # 设置轨道的背景色
+                            troughcolor='orange',             # 设置轨道的背景色
                             variable=self.servo6_v,           # 设置绑定变量
                             sliderlength=12,                  # 设置滑块的长度
                             sliderrelief=tk.FLAT,             # 设置滑块的立体样式
-                            tickinterval=300,               # 设置指示刻度细分
+                            tickinterval=300,                 # 设置指示刻度细分
                             resolution=1,                     # 设置步长
-                            bg='LavenderBlush',               # 设置背景颜色
+                            bg='lemonchiffon',                # 设置背景颜色
                             command=self.servo6_to_pos)       # 设置绑定事件处理，函数或方法
-        # self.sc3.place(x=300, y=130)
-        self.sc6.pack()
+        self.sc6.place(x=300, y=600)
         self.sc6.set(1200)
 
         # # 创建单选钮，气泵
@@ -277,8 +254,8 @@ class GUI(Frame):
 
 if __name__ == "__main__":
     root = tk.Tk()
-    root.title("Serial GUI")
-    root.geometry("400x600")
+    root.title(" Handling Robot Automatic Control System ")
+    root.geometry("1600x760")
     app = GUI(root)
     # frame = tk.Frame(root, *)
     # Frame.pack()
